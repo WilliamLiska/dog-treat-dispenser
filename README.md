@@ -1,1 +1,1 @@
-# dog_treat_dispenser
+# Dog Treat Dispenser
