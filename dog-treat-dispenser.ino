@@ -30,11 +30,11 @@ int potPin = A0;
 Servo servo;
 
 int angle = 0;
-int openAngle = 125;
+int openAngle = 170;
 int maxOpenAngle = 179;
-int closedAngle = 95;
+int closedAngle = 31;
 int minClosedAngle = 30;
-bool testMode = true;
+bool potMode = true;
 
 // set up the Treat Dispenser feed
 AdafruitIO_Feed *digital = io.feed("TreatDispenser");
@@ -81,12 +81,24 @@ void setup() {
 
 void loop() {
 
-  // io.run(); is required for all sketches.
-  // it should always be present at the top of your loop
-  // function. it keeps the client connected to
-  // io.adafruit.com, and processes any incoming data.
-  io.run();
+  if(potMode)
+    potModeLoop();
+  else {
+    // io.run(); is required for all sketches.
+    // it should always be present at the top of your loop
+    // function. it keeps the client connected to
+    // io.adafruit.com, and processes any incoming data.
+    io.run();
+  }
+}
 
+void potModeLoop() {
+  int reading = analogRead(potPin);
+  int angle = map(reading, 1, 1024, closedAngle, openAngle);
+  servo.write(angle);
+  Serial.println(reading);
+  Serial.println(angle);
+  delay(500);
 }
 
 // this is called whenever a DispenserOption message is received.
