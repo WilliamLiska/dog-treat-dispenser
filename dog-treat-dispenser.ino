@@ -68,7 +68,7 @@ void setup() {
   servo.write(backAngle);
   Serial.print("Servo initialized to backAngle ");
   Serial.println(backAngle);
-
+  
 }
 
 void loop() {
@@ -84,6 +84,7 @@ void loop() {
   }
 }
 
+// Handles processing during pot mode.
 void potModeLoop() {
   int reading = analogRead(potPin);
   int angle = map(reading, 1, 1024, forwardAngle, backAngle);
@@ -91,6 +92,11 @@ void potModeLoop() {
   Serial.println(reading);
   Serial.println(angle);
   delay(500);
+}
+
+// Handles processing during automatic mode.
+void autoModeLoop() {
+  
 }
 
 // this is called whenever a DispenserOption message is received.
@@ -147,6 +153,15 @@ void dispenseTreat(){
   digitalWrite(LED_PIN, HIGH);
 }
 
+// Send a message to the treatdispenserfeed indicating a treat should be dispensed.
+// We could simply call dispenseTreat(), but then the feed history would not be updated.
+// The feed should be the source of truth for dispensing treats.
+void requestDispenseTreat() {
+  //Send a value of 1 to the feed
+  treatdispenserfeed->save(1);
+}
+
+// backAngle setter
 void setbackAngle(int angle){
   if(angle > maxbackAngle){
     backAngle = maxbackAngle;
@@ -160,6 +175,7 @@ void setbackAngle(int angle){
   Serial.println(backAngle);
 }
 
+// forwardAngle setter
 void setforwardAngle(int angle){
   if(angle < minforwardAngle){
     forwardAngle = minforwardAngle;
