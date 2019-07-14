@@ -1,15 +1,4 @@
-// Adafruit IO Digital Output Example
-// Tutorial Link: https://learn.adafruit.com/adafruit-io-basics-digital-output
-//
-// Adafruit invests time and resources providing this open source code.
-// Please support Adafruit and open source hardware by purchasing
-// products from Adafruit!
-//
-// Written by Todd Treece for Adafruit Industries
-// Copyright (c) 2016 Adafruit Industries
-// Licensed under the MIT license.
-//
-// All text above must be included in any redistribution.
+// Dog Treat Dispenser with Adafruit IO
 
 /************************** Configuration ***********************************/
 
@@ -37,7 +26,7 @@ int minforwardAngle = 105;
 bool potMode = false;
 
 // set up the Treat Dispenser feed
-AdafruitIO_Feed *digital = io.feed("TreatDispenser");
+AdafruitIO_Feed *treatdispenserfeed = io.feed("TreatDispenser");
 
 // set up the DispenserOptions feed
 AdafruitIO_Feed *dispenserOpts = io.feed("DispenserOptions");
@@ -56,11 +45,11 @@ void setup() {
   Serial.print("Connecting to Adafruit IO");
   io.connect();
 
-  // set up a message handler for the 'digital' feed.
+  // set up a message handler for the 'treatdispenserfeed' feed.
   // the handleMessage function (defined below)
   // will be called whenever a message is
   // received from adafruit io.
-  digital->onMessage(handleMessage);
+  treatdispenserfeed->onMessage(handleMessage);
   dispenserOpts->onMessage(handleOptionsMessage);
 
   // wait for a connection
@@ -72,7 +61,7 @@ void setup() {
   // we are connected
   Serial.println();
   Serial.println(io.statusText());
-  digital->get();
+  treatdispenserfeed->get();
 
   // tell the servo class which pin we are using
   servo.attach(SERVO_PIN);
@@ -131,9 +120,9 @@ void handleOptionsMessage(AdafruitIO_Data *data) {
   }
 }
 
-// this function is called whenever an 'digital' feed message
+// this function is called whenever an 'treatdispenserfeed' feed message
 // is received from Adafruit IO. it was attached to
-// the 'digital' feed in the setup() function above.
+// the 'treatdispenserfeed' feed in the setup() function above.
 void handleMessage(AdafruitIO_Data *data) {
 
   Serial.print("received <- ");
