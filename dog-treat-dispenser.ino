@@ -30,11 +30,11 @@ int potPin = A0;
 Servo servo;
 
 int angle = 0;
-int openAngle = 170;
-int maxOpenAngle = 179;
-int closedAngle = 31;
-int minClosedAngle = 30;
-bool potMode = true;
+int backAngle = 170;
+int maxbackAngle = 175;
+int forwardAngle = 108;
+int minforwardAngle = 105;
+bool potMode = false;
 
 // set up the Treat Dispenser feed
 AdafruitIO_Feed *digital = io.feed("TreatDispenser");
@@ -76,6 +76,9 @@ void setup() {
 
   // tell the servo class which pin we are using
   servo.attach(SERVO_PIN);
+  servo.write(backAngle);
+  Serial.print("Servo initialized to backAngle ");
+  Serial.println(backAngle);
 
 }
 
@@ -94,7 +97,7 @@ void loop() {
 
 void potModeLoop() {
   int reading = analogRead(potPin);
-  int angle = map(reading, 1, 1024, closedAngle, openAngle);
+  int angle = map(reading, 1, 1024, forwardAngle, backAngle);
   servo.write(angle);
   Serial.println(reading);
   Serial.println(angle);
@@ -108,20 +111,20 @@ void handleOptionsMessage(AdafruitIO_Data *data) {
 
   switch(data->toUnsignedInt()){
     case 5:
-      Serial.println("Request to increase openAngle received");
-      setOpenAngle(openAngle + 5);
+      Serial.println("Request to increase backAngle received");
+      setbackAngle(backAngle + 5);
       break;
     case 13:
-      Serial.println("Request to decrease openAngle received");
-      setOpenAngle(openAngle - 5);
+      Serial.println("Request to decrease backAngle received");
+      setbackAngle(backAngle - 5);
       break;
     case 10:
-      Serial.println("Request to increase closedAngle received");
-      setClosedAngle(closedAngle + 5);
+      Serial.println("Request to increase forwardAngle received");
+      setforwardAngle(forwardAngle + 5);
       break;
     case 8:
-      Serial.println("Request to decrease closedAngle received");
-      setClosedAngle(closedAngle - 5);
+      Serial.println("Request to decrease forwardAngle received");
+      setforwardAngle(forwardAngle - 5);
       break;
     default:
       break;
@@ -147,36 +150,36 @@ void handleMessage(AdafruitIO_Data *data) {
 // responsible for dispensing a number of treats
 void dispenseTreat(){
   digitalWrite(LED_PIN, LOW);   //Indicator light tell us when we're operating
-  servo.write(openAngle);
-  Serial.println(openAngle);
+  servo.write(forwardAngle);
+  Serial.println(forwardAngle);
   delay(300);
-  servo.write(closedAngle);
-  Serial.println(closedAngle);
+  servo.write(backAngle);
+  Serial.println(backAngle);
   digitalWrite(LED_PIN, HIGH);
 }
 
-void setOpenAngle(int angle){
-  if(angle > maxOpenAngle){
-    openAngle = maxOpenAngle;
+void setbackAngle(int angle){
+  if(angle > maxbackAngle){
+    backAngle = maxbackAngle;
   }
-  if(angle < closedAngle)
-    openAngle = closedAngle + 1;
+  if(angle < forwardAngle)
+    backAngle = forwardAngle + 1;
   else
-    openAngle = angle;
+    backAngle = angle;
 
-  Serial.print("openAngle set to ");
-  Serial.println(openAngle);
+  Serial.print("backAngle set to ");
+  Serial.println(backAngle);
 }
 
-void setClosedAngle(int angle){
-  if(angle < minClosedAngle){
-    closedAngle = minClosedAngle;
+void setforwardAngle(int angle){
+  if(angle < minforwardAngle){
+    forwardAngle = minforwardAngle;
   }
-  if(angle > openAngle)
-    closedAngle = openAngle - 1;
+  if(angle > backAngle)
+    forwardAngle = backAngle - 1;
   else
-    closedAngle = angle;
+    forwardAngle = angle;
 
-  Serial.print("closedAngle set to ");
-  Serial.println(closedAngle);
+  Serial.print("forwardAngle set to ");
+  Serial.println(forwardAngle);
 }
