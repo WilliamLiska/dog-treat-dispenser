@@ -31,6 +31,11 @@ AdafruitIO_Feed *treatdispenserfeed = io.feed("TreatDispenser");
 // set up the DispenserOptions feed
 AdafruitIO_Feed *dispenserOpts = io.feed("DispenserOptions");
 
+//Vars for auto mode
+bool autoMode = true;
+unsigned long previousMillis = 0; //store the last time we dispensed a treat
+long autoWaitTime = 600000; // Time to wait between auto dispenses
+
 void setup() {
   
   pinMode(LED_PIN, OUTPUT);
@@ -73,14 +78,16 @@ void setup() {
 
 void loop() {
 
+  // io.run(); is required for all sketches.
+  // it should always be present at the top of your loop
+  // function. it keeps the client connected to
+  // io.adafruit.com, and processes any incoming data.
+  io.run();
+
   if(potMode)
     potModeLoop();
-  else {
-    // io.run(); is required for all sketches.
-    // it should always be present at the top of your loop
-    // function. it keeps the client connected to
-    // io.adafruit.com, and processes any incoming data.
-    io.run();
+  else if(autoMode){
+    autoModeLoop();
   }
 }
 
@@ -96,7 +103,15 @@ void potModeLoop() {
 
 // Handles processing during automatic mode.
 void autoModeLoop() {
-  
+  unsigned long currentMillis = millis();
+
+  if(currentMillis - previousMillis >= autoWaitTime){
+    Serial.print("Requesting treat dispense at ");
+    Serial.print(currentMillis);
+    Serial.println(" ms.");
+    requestDispenseTreat();
+    previousMillis = currentMillis;  // Remember the time
+  }
 }
 
 // this is called whenever a DispenserOption message is received.
