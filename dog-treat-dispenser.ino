@@ -32,7 +32,7 @@ AdafruitIO_Feed *treatdispenserfeed = io.feed("TreatDispenser");
 AdafruitIO_Feed *dispenserOpts = io.feed("DispenserOptions");
 
 //Vars for auto mode
-bool autoMode = true;
+bool autoMode = false;
 unsigned long previousMillis = 0; //store the last time we dispensed a treat
 long autoWaitTime = 600000; // Time to wait between auto dispenses
 
@@ -59,8 +59,9 @@ void setup() {
 
   // wait for a connection
   while(io.status() < AIO_CONNECTED) {
-    Serial.print(".");
-    delay(500);
+    Serial.println(".");
+    Serial.print(io.status());
+    delay(1000);
   }
 
   // we are connected
